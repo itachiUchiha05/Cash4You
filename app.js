@@ -5,6 +5,7 @@ var app = express();
 var bodyParser =  require("body-parser");
 var expressValidator = require("express-validator");
 const path  = require('path');
+const port = process.env.port || 3000;
 
 var cors = require("cors");
 app.use(cors());
@@ -26,4 +27,4 @@ const { access } = require('fs');
 
 app.use("/loan", loancontroller)
 
-app.listen(3000);
+app.listen(port);
