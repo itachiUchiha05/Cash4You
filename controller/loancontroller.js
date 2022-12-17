@@ -680,25 +680,14 @@ router.post('/getaddexistingloan', async (req, res) => {
 /////add_login_files///////////////////////////////////////
 
 router.post('/loginadd', async (req, res) => {
-    const objemp = await login.findOne({ _id: req.body.id })
 
-    // var id = req.body._id
-    if (objemp != null) {
-        const objlogin = await login.updateOne({ _id: req.body.id }, {
+    const objlogin = await call_list.updateOne({ _id: req.body.id }, {
 
             status: 20,
 
 
         });
-        if (objlogin != null) {
-            res.json({ result: "success", msg: "loginadd updated successfully", data: 1 });
-        }
-        else {
-            res.json({ result: "failure", msg: "unsuccessful", data: 0 });
-        }
-    }
 
-    else {
         var loginmodel = new login();
         loginmodel.login_date = req.body.login_date;
         loginmodel.call_id = req.body.call_id;
@@ -711,7 +700,7 @@ router.post('/loginadd', async (req, res) => {
         loginmodel.loan_type = req.body.loan_type;
         loginmodel.remark = req.body.remark;
 
-        loginmodel.status = req.body.status;
+        loginmodel.status = 0;
 
 
         loginmodel.add_on = new Date();
@@ -725,10 +714,6 @@ router.post('/loginadd', async (req, res) => {
         else {
             res.json({ result: "failure", msg: "unsuccessful", data: 0 });
         }
-    }
-
-
-
 
 
 });
@@ -1173,8 +1158,8 @@ router.post('/loginadd', async (req, res) => {
 router.post('/updatelogin_status', async (req, res) => {
     //var login_status = '';
 
-    if (req.body.login_status == 2) {
-        const update_res = await login.updateOne({ _id: req.body.id }, {
+    if (req.body.login_status = 2) {
+        const update_res = await login.updateOne({ _id: req.body.login_id }, {
 
             status: 1,
             sanction_amt: req.body.sanction_amt,
@@ -1186,17 +1171,18 @@ router.post('/updatelogin_status', async (req, res) => {
 
 
         });
-        if (update_res != null) {
-            res.json({ result: "success", msg: "updatelogin_status updated successfully", data: 1 });
-        }
-        else {
-            res.json({ result: "failure", msg: "unsuccessful", data: 0 });
-        }
+        // if (update_res != null) {
+        //     res.json({ result: "success", msg: "updatelogin_status updated successfully", data: 1 });
+        // }
+        // else {
+        //     res.json({ result: "failure", msg: "unsuccessful", data: 0 });
+        // }
+        
         //res.send(update_res);
     }
 
-    if (req.body.login_status == 3) {
-        const update_res1 = await login.updateOne({ _id: req.body.id }, {
+    if (req.body.login_status = 3) {
+        const update_res1 = await login.updateOne({ _id: req.body.login_id }, {
 
             status: 3,
             sanction_amt: req.body.sanction_amt,
@@ -1207,29 +1193,34 @@ router.post('/updatelogin_status', async (req, res) => {
             finalremark: req.body.finalremark
 
         });
-        if (update_res != null) {
-            res.json({ result: "success", msg: "updatelogin_status updated successfully", data: 1 });
-        }
-        else {
-            res.json({ result: "failure", msg: "unsuccessful", data: 0 });
-        }
+        // if (update_res1 != null) {
+        //     res.json({ result: "success", msg: "updatelogin_status updated successfully", data: 1 });
+        // }
+        // else {
+        //     res.json({ result: "failure", msg: "unsuccessful", data: 0 });
+        // }
+        
     }
 
-    if (req.body.login_status == 2) {
-        const update_res2 = await login.updateOne({ _id: req.body.id }, {
+    if (req.body.login_status = 2) {
+        const update_res2 = await login.updateOne({ _id: req.body.login_id }, {
 
             status: 2,
             reject_by: req.body.reject_by,
             finalremark: req.body.finalremark
 
         });
+        if (update_res2 != null) {
+            res.json({ result: "success", msg: "updatelogin_status updated successfully", data: 1 });
+        }
+        else {
+            res.json({ result: "failure", msg: "unsuccessful", data: 0 });
+        }
+        
     }
-    if (update_res != null) {
-        res.json({ result: "success", msg: "updatelogin_status updated successfully", data: 1 });
-    }
-    else {
-        res.json({ result: "failure", msg: "unsuccessful", data: 0 });
-    }
+
+    
+    
 
 
 })
@@ -1418,9 +1409,7 @@ router.post('/insertcall', async (req, res) => {
 ////// login_file_detail ////////////////////////////////////////////////////////////
 
 router.post('/getbylogin_file_detail', async (req, res) => {
-    const loginobj = await login.findOne({ _id: req.body.id })
-        .populate("branch_id_fk", "branch_display_name")
-        .populate("bank_id_fk", "bank_name")
+    const loginobj = await login.findOne({ _id: req.body.login_id })
         .populate("call_id", ["customer_name", "executive", "mobile"])
 
     if (loginobj != null) {
@@ -1767,20 +1756,19 @@ router.post('/getbylogin_file_list', async (req, res) => {
                     'from': 'call_lists',
                     'localField': 'call_id',
                     'foreignField': '_id',
-                    'as': 'call'
+                    'as': 'call_id'
                 }
             }, {
                 '$addFields': {
-                    'call': {
+                    'call_id': {
                         '$arrayElemAt': [
-                            '$call', 0
+                            '$call_id', 0
                         ]
                     }
                 }
             }, {
                 '$match': {
                     'status': req.body.login_status,
-                    'call.team_leader': empobj._id
                 }
             }
         ]]
@@ -1804,20 +1792,19 @@ router.post('/getbylogin_file_list', async (req, res) => {
                     'from': 'call_lists',
                     'localField': 'call_id',
                     'foreignField': '_id',
-                    'as': 'call'
+                    'as': 'call_id'
                 }
             }, {
                 '$addFields': {
-                    'call': {
+                    'call_id': {
                         '$arrayElemAt': [
-                            '$call', 0
+                            '$call_id', 0
                         ]
                     }
                 }
             }, {
                 '$match': {
                     'status': req.body.login_status,
-                    'call.parent_coordinator': empobj._id
                 }
             }
         ]]
@@ -1840,20 +1827,19 @@ router.post('/getbylogin_file_list', async (req, res) => {
                     'from': 'call_lists',
                     'localField': 'call_id',
                     'foreignField': '_id',
-                    'as': 'call'
+                    'as': 'call_id'
                 }
             }, {
                 '$addFields': {
-                    'call': {
+                    'call_id': {
                         '$arrayElemAt': [
-                            '$call', 0
+                            '$call_id', 0
                         ]
                     }
                 }
             }, {
                 '$match': {
                     'status': req.body.login_status,
-                    'call.executive': req.body.user_id
                 }
             }
         ]]
@@ -1877,20 +1863,19 @@ router.post('/getbylogin_file_list', async (req, res) => {
                     'from': 'call_lists',
                     'localField': 'call_id',
                     'foreignField': '_id',
-                    'as': 'call'
+                    'as': 'call_id'
                 }
             }, {
                 '$addFields': {
-                    'call': {
+                    'call_id': {
                         '$arrayElemAt': [
-                            '$call', 0
+                            '$call_id', 0
                         ]
                     }
                 }
             }, {
                 '$match': {
                     'status': req.body.login_status,
-                    'call.coordinator': req.body.user_id
                 }
             }
         ]]
@@ -1914,20 +1899,19 @@ router.post('/getbylogin_file_list', async (req, res) => {
                     'from': 'call_lists',
                     'localField': 'call_id',
                     'foreignField': '_id',
-                    'as': 'call'
+                    'as': 'call_id'
                 }
             }, {
                 '$addFields': {
-                    'call': {
+                    'call_id': {
                         '$arrayElemAt': [
-                            '$call', 0
+                            '$call_id', 0
                         ]
                     }
                 }
             }, {
                 '$match': {
                     'status': req.body.login_status,
-                    'call.caller_id': req.body.user_id
                 }
             }
         ]]
@@ -1951,20 +1935,19 @@ router.post('/getbylogin_file_list', async (req, res) => {
                     'from': 'call_lists',
                     'localField': 'call_id',
                     'foreignField': '_id',
-                    'as': 'call'
+                    'as': 'call_id'
                 }
             }, {
                 '$addFields': {
-                    'call': {
+                    'call_id': {
                         '$arrayElemAt': [
-                            '$call', 0
+                            '$call_id', 0
                         ]
                     }
                 }
             }, {
                 '$match': {
                     'status': req.body.login_status,
-                    'call.idc': req.body.user_id
                 }
             }
         ]]
@@ -2559,7 +2542,7 @@ router.post('/getemp_profileofbussiness', async (req, res) => {
             }, {
                 '$match': {
                     'status': '0',
-                    'call.idc': req.body.id
+                   // 'call.idc': req.body.id
                 }
             }
         ]
@@ -2604,7 +2587,7 @@ router.post('/getemp_profileofbussiness', async (req, res) => {
             }, {
                 '$match': {
                     'status': '1',
-                    'call.idc': req.body.id
+                    //'call.idc': req.body.id
                 }
             }
         ]
@@ -2649,7 +2632,7 @@ router.post('/getemp_profileofbussiness', async (req, res) => {
             }, {
                 '$match': {
                     'status': '2',
-                    'call.idc': req.body.id
+                    //'call.idc': req.body.id
                 }
             }
         ]
@@ -2694,7 +2677,7 @@ router.post('/getemp_profileofbussiness', async (req, res) => {
             }, {
                 '$match': {
                     'status': '3',
-                    'call.idc': req.body.id
+                   // 'call.idc': req.body.id
                 }
             }
         ]
@@ -2797,7 +2780,7 @@ router.post('/getemp_profileofdpa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '0',
-                    'call.executive': req.body.id
+                   // 'call.executive': req.body.id
                 }
             }
         ]
@@ -2839,7 +2822,7 @@ router.post('/getemp_profileofdpa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '1',
-                    'call.executive': req.body.id
+                   // 'call.executive': req.body.id
                 }
             }
         ]
@@ -2882,7 +2865,7 @@ router.post('/getemp_profileofdpa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '2',
-                    'call.executive': req.body.id
+                  //  'call.executive': req.body.id
                 }
             }
         ]
@@ -2925,7 +2908,7 @@ router.post('/getemp_profileofdpa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '3',
-                    'call.executive': req.body.id
+                    //'call.executive': req.body.id
                 }
             }
         ]
@@ -3108,7 +3091,7 @@ router.post('/getemp_profileoftco', async (req, res) => {
             }, {
                 '$match': {
                     'status': '0',
-                    'call.caller_id': req.body.id
+                  //  'call.caller_id': req.body.id
                 }
             }
         ]
@@ -3153,7 +3136,7 @@ router.post('/getemp_profileoftco', async (req, res) => {
             }, {
                 '$match': {
                     'status': '1',
-                    'call.caller_id': req.body.id
+                   // 'call.caller_id': req.body.id
                 }
             }
         ]
@@ -3197,7 +3180,7 @@ router.post('/getemp_profileoftco', async (req, res) => {
             }, {
                 '$match': {
                     'status': '2',
-                    'call.caller_id': req.body.id
+                   // 'call.caller_id': req.body.id
                 }
             }
         ]
@@ -3242,7 +3225,7 @@ router.post('/getemp_profileoftco', async (req, res) => {
             }, {
                 '$match': {
                     'status': '3',
-                    'call.caller_id': req.body.id
+                   // 'call.caller_id': req.body.id
                 }
             }
         ]
@@ -3327,6 +3310,7 @@ router.post('/getemp_profileofboa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '0',
+                  //  'call.coordinator': req.body.id
                 }
             }
         ]
@@ -3372,7 +3356,7 @@ router.post('/getemp_profileofboa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '1',
-                    'call.coordinator': req.body.id
+                  //  'call.coordinator': req.body.id
                 }
             }
         ]
@@ -3418,7 +3402,7 @@ router.post('/getemp_profileofboa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '2',
-                    'call.coordinator': req.body.id
+                  //  'call.coordinator': req.body.id
                 }
             }
         ]
@@ -3464,7 +3448,7 @@ router.post('/getemp_profileofboa', async (req, res) => {
             }, {
                 '$match': {
                     'status': '3',
-                    'call.coordinator': req.body.id
+                  //  'call.coordinator': req.body.id
                 }
             }
         ]
@@ -3576,7 +3560,7 @@ router.post('/getemp_profileofbsm', async (req, res) => {
             }, {
                 '$match': {
                     'status': '0',
-                    'call.team_leader': req.body.id
+                   // 'call.team_leader': req.body.id
                 }
             }
         ]
@@ -3622,7 +3606,7 @@ router.post('/getemp_profileofbsm', async (req, res) => {
             }, {
                 '$match': {
                     'status': '1',
-                    'call.team_leader': req.body.id
+                  //  'call.team_leader': req.body.id
                 }
             }
         ]
@@ -3668,7 +3652,7 @@ router.post('/getemp_profileofbsm', async (req, res) => {
             }, {
                 '$match': {
                     'status': '2',
-                    'call.team_leader': req.body.id
+                  //  'call.team_leader': req.body.id
                 }
             }
         ]
@@ -3714,7 +3698,7 @@ router.post('/getemp_profileofbsm', async (req, res) => {
             }, {
                 '$match': {
                     'status': '3',
-                    'call.team_leader': req.body.id
+                 //   'call.team_leader': req.body.id
                 }
             }
         ]
@@ -3804,7 +3788,8 @@ router.post('/getemp_profileofbom', async (req, res) => {
                 }
             }, {
                 '$match': {
-                    'status': '0'
+                    'status': '0',
+                   // 'call.parent_coordinator': req.body.id
                 }
             }
         ]
@@ -3850,7 +3835,7 @@ router.post('/getemp_profileofbom', async (req, res) => {
             }, {
                 '$match': {
                     'status': '1',
-                    'call.parent_coordinator': req.body.id
+                   // 'call.parent_coordinator': req.body.id
                 }
             }
         ]
@@ -3896,7 +3881,7 @@ router.post('/getemp_profileofbom', async (req, res) => {
             }, {
                 '$match': {
                     'status': '2',
-                    'call.parent_coordinator': req.body.id
+                  //  'call.parent_coordinator': req.body.id
                 }
             }
         ]
@@ -3942,7 +3927,7 @@ router.post('/getemp_profileofbom', async (req, res) => {
             }, {
                 '$match': {
                     'status': '3',
-                    'call.parent_coordinator': req.body.id
+                 //   'call.parent_coordinator': req.body.id
                 }
             }
         ]
