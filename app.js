@@ -8,7 +8,7 @@ var app = express();
 var bodyParser =  require("body-parser");
 var expressValidator = require("express-validator");
 const path  = require('path');
-const port = process.env.port || 3000;
+const port = process.env.port || 4000;
 
 var cors = require("cors");
 app.use(cors());
