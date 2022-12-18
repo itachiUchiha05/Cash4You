@@ -91,7 +91,7 @@ router.get('/deletebank/:id', async (req, res) => {
 })
 
 router.post('/getbybankid', async (req, res) => {
-    const objbank = await bank.findOne()
+    const objbank = await bank.find()
 
     if (objbank != null) {
         res.json({ result: "success", msg: "bank List Found", data: objbank });
