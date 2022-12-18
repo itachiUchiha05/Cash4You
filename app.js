@@ -1,6 +1,7 @@
 var mongoose= require('mongoose');
 var express = require('express');
 const dotenv = require("dotenv");
+dotenv.config();
 
 var db = require('./connection/db')
 var app = express();
@@ -29,4 +30,19 @@ const { access } = require('fs');
 
 app.use("/loan", loancontroller)
 
-app.listen(port);
+//app.listen(port);
+console.log(process.env.DATABASE);
+mongoose
+  .connect(process.env.DATABASE, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
+  .then((result) => {
+    console.log("database connected...");
+    app.listen(port, () => {
+      console.log("server listening on port", port);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
