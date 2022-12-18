@@ -1,5 +1,7 @@
 var mongoose= require('mongoose');
 var express = require('express');
+const dotenv = require("dotenv");
+
 var db = require('./connection/db')
 var app = express();
 var bodyParser =  require("body-parser");
